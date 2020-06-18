@@ -11,7 +11,9 @@ DB_NAME = getenv('DB_NAME', 'postgres')
 DB_USER = getenv('DB_USER', 'postgres')
 DB_PASS = getenv('DB_PASS', '1234')
 PIC_FOLDER = getenv('PIC_FOLDER', 'pics')
+PIC_URL = f"https://{getenv('PIC_FOLDER', 'image.walld.net')}"
 LOG_LEVEL = getenv('LOG_LEVEL', 'INFO')
+
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
 log = logging.getLogger('Walld insert pic')

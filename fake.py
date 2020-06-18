@@ -1,13 +1,14 @@
 import json
 from pathlib import Path
+from urllib.parse import urljoin
 
 import colorgram
 import requests
 from walld_db.helpers import DB, Rmq
 from walld_db.models import Picture
 
-from config import (DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, RMQ_HOST,
-                    RMQ_PASS, RMQ_PORT, RMQ_USER, PIC_FOLDER)
+from config import (DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, PIC_FOLDER,
+                    PIC_URL, RMQ_HOST, RMQ_PASS, RMQ_PORT, RMQ_USER, log)
 
 
 def get_dom_color(img: str, how_many: int):
@@ -25,33 +26,37 @@ def download(url, file_path): # мне не нравится это все та�
 def get_hex(colour): # кандидат на удаление
     return '#%02x%02x%02x' % colour.rgb
 
-# TODO МОГУ И КЛАСС ЗАМУТИТЬ С ПИКЧЕЙ И ФУНКЦЙИЕЙ ГО СКЛ
-
 def calc_and_insert(ch, method, properties, body):
-    print('got some')
+    log.info(f'got \n {body}')
     ch.basic_ack(delivery_tag=method.delivery_tag)
     body = json.loads(body.decode())
     c_name = body['category']
     s_c_name = body['sub_category']
+    tags = [db.get_tag(tag_name=i) for i in body['tags']]
 
     file_path = Path(PIC_FOLDER, c_name, s_c_name, 'll.png') # TODO Имя дай номральное
-    if not file_path.exists():
-        file_path.mkdir(parents=True)
+    if not file_path.parent.exists():
+        file_path.parent.mkdir(parents=True)
     download(body['download_url'], file_path)
-    body['path'] = file_path
+    colours = get_dom_color(file_path, how_many=5)
+
     body.pop('download_url')
     body.pop('preview_url')
-    body['category'] = db.get_category(category_name=c_name).category_id
-    tags = [db.get_tag(tag_name=i) for i in body['tags']]
+    body['path'] = str(file_path)
+    body['url'] = urljoin(PIC_URL, str(file_path.relative_to(PIC_FOLDER)))
     body['tags'] = tags
+    body['category'] = db.get_category(category_name=c_name).category_id # getting ids
     body['sub_category'] = db.get_sub_category(sub_category_name=s_c_name).sub_category_id
-    colours = get_dom_color(file_path, how_many=5)
     body['colours'] = [get_hex(i).encode() for i in colours]
 
     pic = Picture(**body)
     print(pic.__dict__)
     with db.get_session() as ses:
-        ses.add(pic)
+        try:
+            ses.add(pic)
+            log.info('successfully added pic!')
+        except Exception as e: # TODO блиииииааааааа понять бы эксепшены алхимии
+            log.error(f'something happend! \n {e}')
 
 db = DB(host=DB_HOST,
         port=DB_PORT,
