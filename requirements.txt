@@ -1,0 +1,5 @@
+git+https://github.com/kz159/WalldDataBase@master
+colorgram.py==1.2.0
+requests==2.23.0
+pyTelegramBotAPI==3.6.7
+pydantic==1.3
