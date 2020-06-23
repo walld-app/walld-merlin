@@ -1,3 +1,7 @@
+'''
+Everything works here
+'''
+import uuid
 from json import loads
 from pathlib import Path
 from urllib.parse import urljoin
@@ -21,26 +25,40 @@ def download(url, file_path): # мне не нравится это все та�
     '''
     Downloads file from first argument to second
     '''
-    r = get(url, stream=True)
-    if r.status_code == 200:
-        with open(file_path, 'wb') as f:
-            for chunk in r.iter_content(1024):
-                f.write(chunk)
+    request = get(url, stream=True)
+    if request.status_code == 200:
+        with open(file_path, 'wb') as file:
+            for chunk in request.iter_content(1024):
+                file.write(chunk)
 
-def get_hex(colour): # кандидат на удаление
+def get_hex(colour):
+    '''
+    gets colour object and returns string with hex
+    '''
     return '#%02x%02x%02x' % colour.rgb
 
-def calc_and_insert(ch, method, properties, body):
+def calc_and_insert(channel, method, properties, body):
+    '''
+    Main function that called by rmq calculates colours
+    and inserts picture object into db
+    '''
     log.info(f'got \n {body}')
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    channel.basic_ack(delivery_tag=method.delivery_tag)
     body = loads(body.decode())
     c_name = body['category']
     s_c_name = body['sub_category']
     tags = [db.get_tag(tag_name=i) for i in body['tags']]
 
-    file_path = Path(PIC_FOLDER, c_name, s_c_name, 'll.png') # TODO Имя дай номральное
+    filename = str(uuid.uuid4())
+    file_path = Path(PIC_FOLDER, c_name, s_c_name, filename)
+
+    while file_path.exists():
+        filename = str(uuid.uuid4())
+        file_path = Path(PIC_FOLDER, c_name, s_c_name, filename)
+
     if not file_path.parent.exists():
         file_path.parent.mkdir(parents=True)
+
     download(body['download_url'], file_path)
     colours = get_dom_color(file_path, how_many=5)
 
@@ -54,12 +72,13 @@ def calc_and_insert(ch, method, properties, body):
     body['colours'] = [get_hex(i).encode() for i in colours]
 
     pic = Picture(**body)
+
     with db.get_session() as ses:
         try:
             ses.add(pic)
             log.info('successfully added pic!')
-        except OperationalError as e:
-            log.error(f'something happend! \n {e}')
+        except OperationalError as traceback:
+            log.error(f'something happend! \n {traceback}')
 
 db = DB(host=DB_HOST,
         port=DB_PORT,
@@ -68,7 +87,9 @@ db = DB(host=DB_HOST,
         name=DB_NAME)
 
 def do_stuff():
-
+    '''
+    listens for jobs on rmq
+    '''
     rmq = Rmq(host=RMQ_HOST,
               port=RMQ_PORT,
               user=RMQ_USER,
