@@ -15,9 +15,13 @@ PIC_URL = f"https://{getenv('PIC_URL', 'image.walld.net')}"
 LOG_LEVEL = getenv('LOG_LEVEL', 'INFO')
 
 
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s')
-log = logging.getLogger('Walld insert pic')
-log.setLevel(LOG_LEVEL)
+logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
+                    level=LOG_LEVEL)
+
+log = logging.getLogger('pika')
+log.setLevel('CRITICAL')
+
+log = logging.getLogger('Walld aku-aku')
 
 log.info(f'got this vars!\n'
          f'DB_HOST = {DB_HOST}\n'
@@ -25,4 +29,6 @@ log.info(f'got this vars!\n'
          f'DB_NAME = {DB_NAME}\n'
          f'LOG_LEVEL = {LOG_LEVEL}\n'
          f'RMQ_HOST = {RMQ_HOST}\n'
-         f'RMQ_PORT = {RMQ_PORT}\n')
+         f'RMQ_PORT = {RMQ_PORT}\n'
+         f'PIC_URL = {PIC_URL}\n'
+         f'PIC_FOLDER = {PIC_FOLDER}')

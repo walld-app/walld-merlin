@@ -95,6 +95,7 @@ def do_stuff():
               user=RMQ_USER,
               passw=RMQ_PASS)
 
+
     rmq.channel.basic_qos(prefetch_count=1)
     rmq.channel.basic_consume(queue='go_sql',
                               on_message_callback=calc_and_insert)
