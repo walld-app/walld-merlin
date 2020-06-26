@@ -48,8 +48,8 @@ def calc_and_insert(channel, method, properties, body):
     c_name = body['category']
     s_c_name = body['sub_category']
     tags = [db.get_tag(tag_name=i) for i in body['tags']]
-
-    filename = str(uuid.uuid4())
+    form = body['download_url'].split('.')[-1]
+    filename = f'{str(uuid.uuid4())}.{form}'
     file_path = Path(PIC_FOLDER, c_name, s_c_name, filename)
 
     while file_path.exists():
@@ -60,6 +60,7 @@ def calc_and_insert(channel, method, properties, body):
         file_path.parent.mkdir(parents=True)
 
     download(body['download_url'], file_path)
+    log.info('Downloaded!')
     colours = get_dom_color(file_path, how_many=5)
 
     body.pop('download_url')
@@ -69,7 +70,7 @@ def calc_and_insert(channel, method, properties, body):
     body['tags'] = tags
     body['category'] = db.get_category(category_name=c_name).category_id # getting ids
     body['sub_category'] = db.get_sub_category(sub_category_name=s_c_name).sub_category_id
-    body['colours'] = [get_hex(i).encode() for i in colours]
+    body['colours'] = [get_hex(i) for i in colours]
 
     pic = Picture(**body)
 
