@@ -41,7 +41,7 @@ jobs:
           IMAGE_ID=kz159/$IMAGE_NAME
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          
+          echo VERSION $VERSION
           if [ "$EVENT" = "repository_dispatch" ]
           then
             VERSION="latest-dev"
