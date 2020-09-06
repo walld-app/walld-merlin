@@ -1,5 +1,6 @@
 from os import getenv
 import logging
+from walld_db.helpers import logger_factory
 
 RMQ_HOST = getenv('RMQ_HOST', 'localhost')
 RMQ_USER = getenv('RMQ_USER', 'guest')
@@ -14,14 +15,10 @@ PIC_FOLDER = getenv('PIC_FOLDER', 'pics')
 PIC_URL = f"https://{getenv('PIC_URL', 'image.walld.net')}"
 LOG_LEVEL = getenv('LOG_LEVEL', 'INFO')
 
-
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
-                    level=LOG_LEVEL)
-
 log = logging.getLogger('pika')
 log.setLevel('CRITICAL')
 
-log = logging.getLogger('Walld aku-aku')
+log = logger_factory('Walld aku-aku', level=LOG_LEVEL)
 
 log.info(f'got this vars!\n'
          f'DB_HOST = {DB_HOST}\n'

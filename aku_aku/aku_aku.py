@@ -99,7 +99,7 @@ def do_stuff():
     """
     listens for jobs on rmq
     """
-
+    # TODO return message to rmq if exception
     rmq.channel.basic_qos(prefetch_count=1)
     rmq.channel.basic_consume(queue='go_sql', on_message_callback=calc_and_insert)
     rmq.channel.start_consuming()
