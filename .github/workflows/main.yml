@@ -28,10 +28,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: Build image
+      - name: RETRIVE_VERSION
         run: |
           echo ::set-env name=VERSION::$(echo ${{ github.ref }} | sed -e 's,.*/\(.*\),\1,')
-          echo VERSION $VERSION
+          echo $VERSION
+          sleep 2
+
+      - name: Build image
+        run: |
           docker build . --file Dockerfile --tag $IMAGE_NAME
           
       - name: Log into registry
