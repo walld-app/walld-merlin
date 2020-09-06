@@ -13,7 +13,6 @@ env:
   IMAGE_NAME: walld_aku_aku
   EVENT: ${{ github.event_name }}
   REF: ${{ github.ref }}
-  VERSION: $(echo $REF | sed -e 's,.*/\(.*\),\1,')
 
 jobs:
   push:
@@ -29,11 +28,6 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-      - name: RETRIVE_VERSION
-        run: |
-          echo $VERSION
-          sleep 2
-
       - name: Build image
         run: |
           docker build . --file Dockerfile --tag $IMAGE_NAME
@@ -43,10 +37,13 @@ jobs:
 
       - name: Push image
         run: |
+          VERSION=$(echo $REF | sed -e 's,.*/\(.*\),\1,')
           IMAGE_ID=kz159/$IMAGE_NAME
+          echo VERSION $VERSION
+          
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          echo VERSION $VERSION
+          
           if [ "$EVENT" = "repository_dispatch" ]
           then
             VERSION="latest-dev"
