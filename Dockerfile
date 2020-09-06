@@ -3,7 +3,8 @@ FROM base as builder
 
 WORKDIR /install
 
-RUN apk update && apk add gcc postgresql-dev python3-dev musl-dev git zlib-dev build-base jpeg-dev --no-cache
+RUN apk update && apk add gcc postgresql-dev python3-dev musl-dev git zlib-dev build-base jpeg-dev  --no-cache
+
 RUN /usr/local/bin/python -m pip install --upgrade pip
 
 COPY requirements.txt /requirements.txt
@@ -11,7 +12,7 @@ RUN pip install --prefix=/install -r /requirements.txt
 
 FROM base
 
-RUN apk add libpq --no-cache
+RUN apk add libpq jpeg-dev --no-cache
 
 COPY --from=builder /install /usr/local
 
