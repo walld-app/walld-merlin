@@ -10,7 +10,7 @@ import colorgram
 from requests import get
 from sqlalchemy.exc import OperationalError
 from walld_db.helpers import DB, Rmq
-from walld_db.models import Picture, Tag
+from walld_db.models import Picture, Tag, Category, SubCategory
 
 from config import (DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, PIC_FOLDER,
                     PIC_URL, RMQ_HOST, RMQ_PASS, RMQ_PORT, RMQ_USER, log)
@@ -81,8 +81,8 @@ def calc_and_insert(channel, method, _, body):
     body['path'] = str(file_path)
     body['url'] = urljoin(PIC_URL, str(file_path.relative_to(PIC_FOLDER)))
     body['tags'] = tags
-    body['category'] = db.get_category(category_name=c_name).category_id # getting ids
-    body['sub_category'] = db.get_sub_category(sub_category_name=s_c_name).sub_category_id
+    body['category'] = db.get_row(Category, name=c_name).id  # getting ids
+    body['sub_category'] = db.get_row(SubCategory, name=s_c_name).id
     body['colours'] = [get_hex(i) for i in colours]
 
     pic = Picture(**body)
