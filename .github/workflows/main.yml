@@ -20,8 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        if: github.event_name == 'repository_dispatch'
         with:
-          ref: ${{ github.ref }}
+          ref: dev
 
       - name: Build image
         run: |
