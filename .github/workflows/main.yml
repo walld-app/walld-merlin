@@ -12,7 +12,8 @@ on:
 env:
   IMAGE_NAME: walld_aku_aku
   EVENT: ${{ github.event_name }}
-  VERSION: $(echo ${{ github.ref }} | sed -e 's,.*/\(.*\),\1,')
+  REF: ${{ github.ref }}
+  VERSION: $(echo $REF | sed -e 's,.*/\(.*\),\1,')
 
 jobs:
   push:
