@@ -30,6 +30,7 @@ jobs:
 
       - name: Build image
         run: |
+          echo ::set-env name=VERSION::$(echo ${{ github.ref }} | sed -e 's,.*/\(.*\),\1,')
           echo VERSION $VERSION
           docker build . --file Dockerfile --tag $IMAGE_NAME
           
