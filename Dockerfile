@@ -6,7 +6,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
-COPY . .
+COPY aku_aku .
 
-CMD python3 src/main.py
+CMD python3 main.py
 
