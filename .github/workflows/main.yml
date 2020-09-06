@@ -24,6 +24,11 @@ jobs:
         with:
           ref: refs/heads/dev
 
+      - uses: actions/checkout@v2
+        if: github.event_name == 'push'
+        with:
+          ref: ${{ github.ref }}
+
       - name: Build image
         run: |
           echo ${{ github.ref }}
