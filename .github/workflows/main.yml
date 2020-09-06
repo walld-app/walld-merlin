@@ -12,8 +12,7 @@ on:
 env:
   IMAGE_NAME: walld_aku_aku
   EVENT: ${{ github.event_name }}
-  APP_NAME: $(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
-  VERSION: $(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+  VERSION: $( echo ${{ github.ref }} | sed -e 's,.*/\(.*\),\1,' )
 
 jobs:
   push:
@@ -31,10 +30,10 @@ jobs:
 
       - name: Build image
         run: |
-          echo ${{ github.ref }}
+          echo VERSION $VERSION
           docker build . --file Dockerfile --tag $IMAGE_NAME
+          
       - name: Log into registry
-        
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u kz159 --password-stdin
 
       - name: Push image
@@ -43,8 +42,6 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           
-          echo EVENT $EVENT
-          echo VERSION $VERSION
           if [ "$EVENT" = "repository_dispatch" ]
           then
             VERSION="latest-dev"
