@@ -11,7 +11,7 @@ on:
 
 env:
   IMAGE_NAME: walld_aku_aku
-  EVENT: github.event_name
+  EVENT: ${{ github.event_name }}
   APP_NAME: $(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
   VERSION: $(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
