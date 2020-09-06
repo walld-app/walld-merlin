@@ -30,7 +30,8 @@ jobs:
 
       - name: RETRIVE_VERSION
         run: |
-          echo ::set-env name=VERSION::$(echo ${{ github.ref }} | sed -e 's,.*/\(.*\),\1,')
+          LL=$(echo ${{ github.ref }} | sed -e 's,.*/\(.*\),\1,')
+          echo ::set-env name=VERSION::$LL
           echo $VERSION
           sleep 2
 
