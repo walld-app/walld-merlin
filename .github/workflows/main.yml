@@ -12,12 +12,17 @@ on:
 env:
   IMAGE_NAME: walld_aku_aku
   EVENT: github.event_name
+  APP_NAME: $(cat Dockerfile | grep APP_NAME= | head -n 1 | grep -o '".*"' | sed 's/"//g')
+  VERSION: $(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
 jobs:
   push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: $(VERSION)
+
       - name: Build image
         run: |
           echo ${{ github.ref }}
@@ -31,7 +36,6 @@ jobs:
           IMAGE_ID=kz159/$IMAGE_NAME
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           
           if [ "$EVENT" = "repository_dispatch" ]
           then
