@@ -6,20 +6,13 @@ from json import loads
 from pathlib import Path
 from urllib.parse import urljoin
 
+from PIL import Image
 import colorgram
 from requests import get
 from sqlalchemy.exc import OperationalError
-from walld_db.helpers import DB, Rmq
-from walld_db.models import Picture, Tag, Category, SubCategory
-
-from config import (DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, PIC_FOLDER,
-                    PIC_URL, RMQ_HOST, RMQ_PASS, RMQ_PORT, RMQ_USER, log)
-
-rmq = Rmq(host=RMQ_HOST, port=RMQ_PORT, user=RMQ_USER, passw=RMQ_PASS)
-db = DB(host=DB_HOST, port=DB_PORT, user=DB_USER, passwd=DB_PASS, name=DB_NAME)
 
 
-def get_dom_color(img: str, how_many: int):
+def get_dom_color(img: Image, how_many: int) -> list[colorgram.Color]:
     """gets dominant color"""
     colors = colorgram.extract(img, how_many)
     return colors
@@ -93,13 +86,3 @@ def calc_and_insert(channel, method, _, body):
             log.info('successfully added pic!')
         except OperationalError as traceback:
             log.error(f'something happend! \n {traceback}')
-
-
-def do_stuff():
-    """
-    listens for jobs on rmq
-    """
-    # TODO return message to rmq if exception
-    rmq.channel.basic_qos(prefetch_count=1)
-    rmq.channel.basic_consume(queue='go_sql', on_message_callback=calc_and_insert)
-    rmq.channel.start_consuming()
