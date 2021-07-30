@@ -2,4 +2,8 @@
 
 uvicorn==0.14.0
 pytest
+pytest-asyncio
 requests
+pre-commit==2.13.0
+
+

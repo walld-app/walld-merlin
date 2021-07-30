@@ -23,7 +23,6 @@ def get_dominant_color(
     return DominantColorResponse(
         colors=get_dom_color(pil_image, how_many),
         message='have a nice day!'
-    )
 
 
 @app.get("/api/service/healthcheck")
