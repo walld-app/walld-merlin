@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - dev
-  
+
   repository_dispatch:
     types: [dev-db-updated]
 
@@ -31,7 +31,7 @@ jobs:
       - name: Build image
         run: |
           docker build . --file Dockerfile --tag $IMAGE_NAME
-          
+
       - name: Log into registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u kz159 --password-stdin
 
@@ -40,10 +40,10 @@ jobs:
           VERSION=$(echo $REF | sed -e 's,.*/\(.*\),\1,')
           IMAGE_ID=kz159/$IMAGE_NAME
           echo VERSION $VERSION
-          
+
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          
+
           if [ "$EVENT" = "repository_dispatch" ]
           then
             VERSION="latest-dev"
@@ -53,9 +53,9 @@ jobs:
           else
             VERSION='latest'
           fi
-          
+
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-          
+
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION

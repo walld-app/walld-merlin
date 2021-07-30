@@ -15,4 +15,4 @@ def get_hex(colour):
     """
     gets colour object and returns string with hex
     """
-    return '#%02x%02x%02x' % colour.rgb
+    return "#%02x%02x%02x" % colour.rgb

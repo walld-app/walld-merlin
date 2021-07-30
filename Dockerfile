@@ -25,4 +25,3 @@ RUN pip3 install .
 CMD python3 merlin
 
 #todo uvicorn?
-
