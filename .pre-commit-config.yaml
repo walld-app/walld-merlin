@@ -3,7 +3,7 @@ repos:
   rev: v0.910
   hooks:
   - id: mypy
-    name: mypy
+    name: mypy  # todo add missing imports?
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: "v2.5.0"

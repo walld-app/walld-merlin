@@ -5,12 +5,14 @@ pytestmark = mark.asyncio
 
 
 class TestAllViews:
+    TEST_IMAGE = "tests/test_image.jpg"
+
     async def test_health(self, client):
         response = await client.get("/api/service/healthcheck")
         assert response.status_code == 200
 
     async def test_dominant_color(self, client):
-        with open("./test_image.jpg", "rb") as file:
+        with open(self.TEST_IMAGE, "rb") as file:
             response = await client.post(
                 "/api/get_dominant_color",
                 files=dict(
@@ -36,7 +38,7 @@ class TestAllViews:
 
     async def test_merlin_client(self, client):
         client = MerlinApiClient(client)
-        with open("./test_image.jpg", "rb") as file:
+        with open(self.TEST_IMAGE, "rb") as file:
             response = await client.get_dominant_color(file.read(), how_many=2)
 
         assert response.message == "have a nice day!"
